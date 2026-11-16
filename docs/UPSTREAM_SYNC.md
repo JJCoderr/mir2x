@@ -308,3 +308,50 @@ git diff --stat main upstream/main                  # 双方整体差异
 git diff --stat 'v0.1^{}' upstream/main             # 上游自基线以来的改动
 powershell -NoProfile -File ./scripts/sync_upstream.ps1   # 一键：抓取 + 报告（可加 -Mirror 更新镜像分支）
 ```
+
+## 9. 可优先摘取的上游提交（server / common / ports / 构建配置）
+
+基线以来这类提交共 **404** 条，冲突面小，适合用 git cherry-pick 逐条摘取。最近 40 条：
+
+```text
+0a2225c7 2026-11-12 Widen gold to 64-bit and use parserf for price, level and count input
+7578f744 2026-11-12 Add parserf for strict parsing and range checks of price, level and counts
+6af9b0a5 2026-11-11 Check stall selling in each net_CM_* handler with its own error type
+9c91ed55 2026-11-11 Check mir2x_assets version when installing resources
+161fd4cc 2026-11-11 Merge playerstall.cpp into player.cpp, playernet.cpp and playerop.cpp
+54c97882 2026-11-10 Add basic 自动打怪 for players, started from 散财童子 and kept running when hosted
+ea1efde8 2026-11-10 Guard char deletion and stall ops against hosted actors and pending trades
+5eb200e0 2026-11-09 Add offline hosting (离线挂机) and drop snapshot-based offline stalls
+389ba798 2026-11-07 Rename stall open action and errors to start/selling
+97f33ff9 2026-11-07 Rename stall "open" state to "selling"
+68ded536 2026-11-07 Widget skill: document member initialization order
+e32f24a0 2026-11-07 Add initial stall-sell (摆摊) system, replacing the exchange button
+201b19d3 2026-11-04 SYS_DEFRPS
+4ffd8452 2026-11-03 client: add 平滑移动 option and lay out 常用 page in 3 columns
+89a525cf 2026-11-03 add RTCFG_刷新率 and 刷新率 pull menu in RuntimeConfigBoard
+2ab0ef9b 2026-11-03 Team: SDTeamReq/SDTeamJobReq with jobf gfx-index job order
+03b3c3b4 2026-11-03 Team: offline handling, exp share, follow toggle, job column
+ed0753b9 2026-11-03 support transferring team leader
+92037041 2026-11-03 query nearby team info for TeamStateBoard nearby page
+73b71f77 2026-11-03 check team requirement on server when applying and joining team
+ed92ae0d 2026-11-03 add CM_CREATETEAM/CM_SETTEAMREQUIREMENT and wire team requirement pages
+3fb5f4e3 2026-11-03 move team requirement to common SDTeamRequirement
+060c9a3c 2026-11-02 zsdbmaker: add --comp-level and --comp-ratio-threshold, install_res uses max/0.99
+a9f6ddda 2026-11-02 boardcast team leader token
+a360c2e8 2026-11-02 build: switch to mir2x_assets, rename --res-path to --assets-path
+5c924db5 2026-10-31 client: load magic gfx from APNGs with MagicDB
+f05d2151 2026-10-26 fix emoji indexing
+4303a189 2026-10-26 client: load emoji from APNG with per-frame delays
+0fa7e563 2026-10-25 fix UB in innDB::dtor
+d8ca8a55 2026-10-25 f
+f67a7055 2026-10-20 fix revive relocation without flushing death motions
+9a1c56db 2026-10-20 add minimize button for revive and logout to character select
+4ceb8657 2026-10-19 fix belt consume
+a3664af4 2026-10-19 fix Windows hres_tstamp overflow causing negative profiler totals
+a6984136 2026-10-19 HPBar fix
+68985c4e 2026-10-18 fit numeric HP bars to text and update attached GUI
+17833477 2026-10-18 small tweak
+2a9f4ebc 2026-10-17 show player monster and NPC names through runtime configuration
+052be84a 2026-10-17   send CO net packages to map observers instead of own in-view list
+bbbe0721 2026-10-17 use ZSTD default compression level in zstdEncode
+```
