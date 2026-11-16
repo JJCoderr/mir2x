@@ -355,3 +355,27 @@ a6984136 2026-10-19 HPBar fix
 052be84a 2026-10-17   send CO net packages to map observers instead of own in-view list
 bbbe0721 2026-10-17 use ZSTD default compression level in zstdEncode
 ```
+
+## 10. 2026-11-16 历史结构变更（重要）
+
+远端仓库重新 fork 上游后，本地重写了分支拓扑，当前约定：
+
+| 引用 | 含义 |
+|---|---|
+| `main`（`97e5b2c0`） | 主线：直接继承上游真实历史（242 个提交 SHA 与 etorth/mir2x 一致），在 `a1e65e5` 之后接本仓库 138 个提交 |
+| `legacy/main`（`4a4ddb51`） | 旧主线备份：上游历史被重放（SHA 不同）的版本，仅作对比/回退用 |
+| `upstream-main` | 上游 `main` 镜像（`f7072661`，2026-11-13），便于在 GitHub 网页查看上游 |
+| `v0.1` | 指向上游提交 `a1e65e5`（= 分叉基线，内容树 `2feb38b8`） |
+| `base/upstream-2026-07-10` | 同上，基线提交的别名 |
+
+变动方式：不改动任何提交内容，仅把自有提交的父指针从"重放链"（`10c35be`）改挂到上游真实提交 `a1e65e5` 并重算 SHA，
+因此 `git diff legacy/main main` 为空（1254 个文件完全相同），分支树逐一核对一致。
+
+之后与上游交互：
+
+```bash
+git fetch upstream --prune
+git merge-base main upstream/main       # 输出 a1e65e5，即分叉点
+git rev-list main --not upstream/main --count   # 本仓库独有提交数
+git cherry-pick <upstream-sha>          # 摘取需要的上游修复
+```
