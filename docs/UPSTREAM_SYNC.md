@@ -10,12 +10,12 @@
 | `origin` | `https://github.com/<本账号>/mir2x.git` | 自己的仓库 |
 | `upstream` | `https://github.com/etorth/mir2x.git` | 上游参考源 |
 
-另外 `origin` 上保留只读镜像分支 `upstream-main`，内容就是上游 `main`（`f7072661`，2026-11-13），
-便于在 GitHub 网页上直接浏览上游代码，不受上游网络访问情况影响：
+上游代码通过 `upstream` remote 在本地浏览，不在 `origin` 上保留镜像分支（`upstream-main` 已删除）：
 
 ```bash
-git push origin refs/remotes/upstream/main:refs/heads/upstream-main   # 更新镜像
-git push origin --delete upstream-main                                # 不需要时删除
+git fetch upstream --prune
+git log --oneline upstream/main -20
+git show upstream/main:client/src/gldevice.cpp
 ```
 
 ## 2. 参考基线
@@ -306,7 +306,7 @@ git log --oneline upstream/main -30                 # 上游最近提交
 git log --oneline main ^upstream/main | head -30    # 本仓库独有提交
 git diff --stat main upstream/main                  # 双方整体差异
 git diff --stat 'v0.1^{}' upstream/main             # 上游自基线以来的改动
-powershell -NoProfile -File ./scripts/sync_upstream.ps1   # 一键：抓取 + 报告（可加 -Mirror 更新镜像分支）
+powershell -NoProfile -File ./scripts/sync_upstream.ps1   # 一键：抓取 + 报告
 ```
 
 ## 9. 可优先摘取的上游提交（server / common / ports / 构建配置）
@@ -364,7 +364,6 @@ bbbe0721 2026-10-17 use ZSTD default compression level in zstdEncode
 |---|---|
 | `main`（`97e5b2c0`） | 主线：直接继承上游真实历史（242 个提交 SHA 与 etorth/mir2x 一致），在 `a1e65e5` 之后接本仓库 138 个提交 |
 | `legacy/main`（`4a4ddb51`） | 旧主线备份：上游历史被重放（SHA 不同）的版本，仅作对比/回退用 |
-| `upstream-main` | 上游 `main` 镜像（`f7072661`，2026-11-13），便于在 GitHub 网页查看上游 |
 | `v0.1` | 指向上游提交 `a1e65e5`（= 分叉基线，内容树 `2feb38b8`） |
 | `base/upstream-2026-07-10` | 同上，基线提交的别名 |
 

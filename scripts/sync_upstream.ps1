@@ -1,16 +1,14 @@
 ﻿# 上游 etorth/mir2x 同步助手
 #
 # 用法：
-#   pwsh ./scripts/sync_upstream.ps1                # 抓取上游并输出报告
-#   pwsh ./scripts/sync_upstream.ps1 -Count 50      # 只看最近 50 条
-#   pwsh ./scripts/sync_upstream.ps1 -Mirror        # 额外把上游 main 推到 origin/upstream-main
+#   powershell -NoProfile -File ./scripts/sync_upstream.ps1            # 抓取上游并输出报告
+#   powershell -NoProfile -File ./scripts/sync_upstream.ps1 -Count 50  # 只看最近 50 条
 #
 # 说明见 docs/UPSTREAM_SYNC.md
 
 param(
     [int]$Count = 20,
-    [string]$Base = 'v0.1^{}',
-    [switch]$Mirror
+    [string]$Base = 'base/upstream-2026-07-10'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -46,15 +44,11 @@ $inter | ForEach-Object { ($_ -split '/')[0] } | Group-Object |
 Section '整体差异（本仓库 main → 上游 main）'
 RunGit diff --stat main upstream/main | Select-Object -Last 1
 
-if ($Mirror) {
-    Section '更新镜像分支 origin/upstream-main'
-    RunGit push origin refs/remotes/upstream/main:refs/heads/upstream-main 2>&1 | Select-Object -Last 3
-}
 
 Section '提示'
 @'
 - 只想要上游的服务端/公共层修复：git log upstream/main -- server common 后 git cherry-pick
 - 想对比某个文件：git diff 'v0.1^{}' upstream/main -- <path>
-- 在 GitHub 网页看上游：分支 upstream-main（本仓库镜像），或 https://github.com/etorth/mir2x
+- 上游代码在本地看：git show upstream/main:<path> / git log upstream/main；网页 https://github.com/etorth/mir2x
 - 详细路线见 docs/UPSTREAM_SYNC.md
 '@
